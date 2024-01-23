@@ -1,58 +1,100 @@
+{-# LANGUAGE StandaloneDeriving #-}
+
 module Data.Field.Galois.Prime
-  ( Prime
-  , PrimeField
-  , fromP
-  , toP
-  ) where
+  ( Prime,
+    PrimeField,
+    fromP,
+    toP,
+  )
+where
 
-import Protolude as P hiding (Semiring, natVal, rem)
-
-import Control.Monad.Random (Random(..))
-import Data.Euclidean as S (Euclidean(..), GcdDomain)
+import Control.Monad.Random (Random (..))
+import Data.Euclidean as S (Euclidean (..), GcdDomain (..))
 import Data.Field (Field)
-import Data.Group (Group(..))
-import Data.Mod (Mod, unMod, (^%))
-import Data.Semiring (Ring(..), Semiring(..))
-import GHC.Natural (naturalToInteger)
+import Data.Field.Galois.Base (GaloisField (..))
+import Data.Group (Group (..))
+import Data.Modular (Mod, Modulus, unMod)
+import Data.Semiring (Ring (..), Semiring (..))
 import GHC.TypeNats (natVal)
-import Test.QuickCheck (Arbitrary(..), choose)
-import Text.PrettyPrint.Leijen.Text (Pretty(..))
-
-import Data.Field.Galois.Base (GaloisField(..))
+import Protolude as P hiding (Semiring, natVal, rem)
+import Test.QuickCheck (Arbitrary (..), choose)
+import Text.PrettyPrint.Leijen.Text (Pretty (..))
+import qualified Prelude
 
 -------------------------------------------------------------------------------
 -- Data types
 -------------------------------------------------------------------------------
 
 -- | Prime fields @GF(p) = Z/pZ@ for @p@ prime.
-class GaloisField k => PrimeField k where
+class (GaloisField k) => PrimeField k where
   {-# MINIMAL fromP #-}
+
   -- | Convert from @GF(p)@ to @Z@.
   fromP :: k -> Integer
 
 -- | Prime field elements.
-newtype Prime (p :: Nat) = P (Mod p)
-  deriving (Eq, Ord, Show, Generic, Num, Fractional, Euclidean, Field, GcdDomain, Ring, Semiring, Bounded, Enum, NFData)
+newtype Prime (p :: Nat) = P (Mod Integer p)
+  deriving (Eq, Ord, Show, Generic)
+
+deriving instance (Modulus p) => Num (Prime p)
+
+deriving instance (Modulus p) => Fractional (Prime p)
+
+instance (Modulus p) => Euclidean (Prime p) where
+  degree = const 0
+  quotRem x y = (x / y, 0)
+  quot = (/)
+  rem = const $ const 0
+  {-# INLINE degree #-}
+
+deriving instance (Modulus p) => Field (Prime p)
 
 instance Hashable (Prime p) where
   hashWithSalt s (P x) = hashWithSalt s (unMod x)
 
+instance (Modulus p) => GcdDomain (Prime p) where
+  divide x y = Just (x / y)
+  gcd = const $ const 1
+  lcm = const $ const 1
+  coprime = const $ const True
+
 -- Prime fields are convertible.
-instance KnownNat p => PrimeField (Prime p) where
-  fromP (P x) = naturalToInteger (unMod x)
-  {-# INLINABLE fromP #-}
+instance (Modulus p) => PrimeField (Prime p) where
+  fromP (P x) = unMod x
+  {-# INLINEABLE fromP #-}
 
 -- Prime fields are Galois fields.
-instance KnownNat p => GaloisField (Prime p) where
+instance (Modulus p) => GaloisField (Prime p) where
   char = natVal
-  {-# INLINABLE char #-}
-  deg  = const 1
-  {-# INLINABLE deg #-}
+  {-# INLINEABLE char #-}
+  deg = const 1
+  {-# INLINEABLE deg #-}
   frob = identity
-  {-# INLINABLE frob #-}
+  {-# INLINEABLE frob #-}
 
-{-# RULES "Prime.pow"
-  forall (k :: KnownNat p => Prime p) n . (^) k n = pow k n
+instance (Modulus p) => Ring (Prime p) where
+  negate = Prelude.negate
+  {-# INLINE negate #-}
+
+instance (Modulus p) => Semiring (Prime p) where
+  plus = (+)
+  times = (*)
+  zero = 0
+  one = mx
+    where
+      mx = if natVal mx > 1 then 1 else 0
+  fromNatural x = mx
+    where
+      mx = fromIntegral $ x `mod` natVal mx
+
+deriving instance (Modulus p) => Bounded (Prime p)
+
+deriving instance (Modulus p) => Enum (Prime p)
+
+{-# RULES
+"Prime.pow" forall (k :: (Modulus p) => Prime p) n.
+  (^) k n =
+    pow k n
   #-}
 
 -------------------------------------------------------------------------------
@@ -60,20 +102,20 @@ instance KnownNat p => GaloisField (Prime p) where
 -------------------------------------------------------------------------------
 
 -- Prime fields are multiplicative groups.
-instance KnownNat p => Group (Prime p) where
+instance (Modulus p) => Group (Prime p) where
   invert = recip
   {-# INLINE invert #-}
-  pow (P x) k = P (x ^% k)
+  pow (P x) k = P (x ^ k)
   {-# INLINE pow #-}
 
 -- Prime fields are multiplicative monoids.
-instance KnownNat p => Monoid (Prime p) where
+instance (Modulus p) => Monoid (Prime p) where
   mempty = P 1
   {-# INLINE mempty #-}
 
 -- Prime fields are multiplicative semigroups.
-instance KnownNat p => Semigroup (Prime p) where
-  (<>)   = (*)
+instance (Modulus p) => Semigroup (Prime p) where
+  (<>) = (*)
   {-# INLINE (<>) #-}
   stimes = flip pow
   {-# INLINE stimes #-}
@@ -83,38 +125,38 @@ instance KnownNat p => Semigroup (Prime p) where
 -------------------------------------------------------------------------------
 
 -- Prime fields are arbitrary.
-instance KnownNat p => Arbitrary (Prime p) where
+instance (Modulus p) => Arbitrary (Prime p) where
   arbitrary = choose (minBound, maxBound)
-  {-# INLINABLE arbitrary #-}
+  {-# INLINEABLE arbitrary #-}
 
 -- Prime fields are integral.
-instance KnownNat p => Integral (Prime p) where
-  quotRem   = S.quotRem
+instance (Modulus p) => Integral (Prime p) where
+  quotRem = S.quotRem
   {-# INLINE quotRem #-}
   toInteger = fromP
-  {-# INLINABLE toInteger #-}
+  {-# INLINEABLE toInteger #-}
 
 -- Prime fields are pretty.
-instance KnownNat p => Pretty (Prime p) where
-  pretty (P x) = pretty $ naturalToInteger $ unMod x
+instance (KnownNat p) => Pretty (Prime p) where
+  pretty (P x) = pretty $ unMod x
 
 -- Prime fields are random.
-instance KnownNat p => Random (Prime p) where
-  random         = randomR (minBound, maxBound)
-  {-# INLINABLE random #-}
+instance (Modulus p) => Random (Prime p) where
+  random = randomR (minBound, maxBound)
+  {-# INLINEABLE random #-}
   randomR (a, b) = first fromInteger . randomR (fromP a, fromP b)
-  {-# INLINABLE randomR #-}
+  {-# INLINEABLE randomR #-}
 
 -- Prime fields are real.
-instance KnownNat p => Real (Prime p) where
+instance (Modulus p) => Real (Prime p) where
   toRational = fromIntegral
-  {-# INLINABLE toRational #-}
+  {-# INLINEABLE toRational #-}
 
 -------------------------------------------------------------------------------
 -- Auxiliary functions
 -------------------------------------------------------------------------------
 
 -- | Safe convert from @Z@ to @GF(p)@.
-toP :: KnownNat p => Integer -> Prime p
+toP :: (Modulus p) => Integer -> Prime p
 toP = fromInteger
-{-# INLINABLE toP #-}
+{-# INLINEABLE toP #-}

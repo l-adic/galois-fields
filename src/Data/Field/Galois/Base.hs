@@ -1,13 +1,13 @@
 module Data.Field.Galois.Base
-  ( module Data.Field.Galois.Base
-  ) where
-
-import Protolude hiding ((-), one, quot)
+  ( module Data.Field.Galois.Base,
+  )
+where
 
 import Control.Monad.Random (Random)
 import Data.Field (Field)
-import qualified Data.Group as G (Group(..))
+import qualified Data.Group as G (Group (..))
 import GHC.Natural (Natural)
+import Protolude hiding (one, quot, (-))
 import Test.QuickCheck (Arbitrary)
 import Text.PrettyPrint.Leijen.Text (Pretty)
 
@@ -16,8 +16,19 @@ import Text.PrettyPrint.Leijen.Text (Pretty)
 -------------------------------------------------------------------------------
 
 -- | Galois fields @GF(p^q)@ for @p@ prime and @q@ non-negative.
-class (Arbitrary k, Field k, Fractional k, Generic k, G.Group k,
-       NFData k, Ord k, Pretty k, Random k, Show k) => GaloisField k where
+class
+  ( Arbitrary k,
+    Field k,
+    Fractional k,
+    Generic k,
+    G.Group k,
+    Ord k,
+    Pretty k,
+    Random k,
+    Show k
+  ) =>
+  GaloisField k
+  where
   {-# MINIMAL char, deg, frob #-}
 
   -- | Characteristic @p@ of field and order of prime subfield.
@@ -32,16 +43,15 @@ class (Arbitrary k, Field k, Fractional k, Generic k, G.Group k,
   -- | Order @p^q@ of field.
   order :: k -> Natural
   order = (^) <$> char <*> deg
-  {-# INLINABLE order #-}
+  {-# INLINEABLE order #-}
 
 -- | Exponentiation of field element to integer.
 pow :: (GaloisField k, Integral n) => k -> n -> k
 pow = G.pow
-{-# INLINABLE pow #-}
-
-{-# SPECIALISE pow ::
-  GaloisField k => k -> Int -> k,
-  GaloisField k => k -> Integer -> k,
-  GaloisField k => k -> Natural -> k,
-  GaloisField k => k -> Word -> k
+{-# INLINEABLE pow #-}
+{-# SPECIALIZE pow ::
+  (GaloisField k) => k -> Int -> k,
+  (GaloisField k) => k -> Integer -> k,
+  (GaloisField k) => k -> Natural -> k,
+  (GaloisField k) => k -> Word -> k
   #-}

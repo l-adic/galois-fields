@@ -1,0 +1,4 @@
+tests: True
+
+packages:
+  ./galois-field.cabal
