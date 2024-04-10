@@ -46,7 +46,7 @@ class GaloisField k => IrreducibleMonic p k where
 class GaloisField k => ExtensionField k where
   {-# MINIMAL fromE #-}
   -- | Convert from @GF(p^q)[X]/\<f(X)\>@ to @GF(p^q)[X]@.
-  fromE :: (GaloisField l, IrreducibleMonic p l, k ~ Extension p l) => k -> [l]
+  fromE :: (IrreducibleMonic p l, k ~ Extension p l) => k -> [l]
 
 -- | Extension field elements.
 newtype Extension p k = E (VPoly k)

@@ -208,7 +208,7 @@ toB = fromInteger
 {-# INLINABLE toB #-}
 
 -- | Unsafe convert from @Z@ to @GF(2^q)[X]/\<f(X)\>@.
-toB' :: KnownNat p => Integer -> Binary p
+toB' :: Integer -> Binary p
 toB' = B . toPoly
 {-# INLINABLE toB' #-}
 

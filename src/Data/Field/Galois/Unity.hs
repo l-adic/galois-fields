@@ -17,7 +17,6 @@ import Control.Monad.Random (Random (..))
 import Data.Field.Galois.Base (GaloisField (..))
 import Data.Field.Galois.Prime (Prime)
 import Data.Group (Group (..))
-import Data.Modular (Modulus)
 import GHC.Natural (Natural, naturalToInteger)
 import GHC.TypeNats (natVal)
 import Protolude hiding (natVal)
@@ -29,7 +28,7 @@ import Text.PrettyPrint.Leijen.Text (Pretty (..))
 -------------------------------------------------------------------------------
 
 -- | Cyclic subgroups of finite groups.
-class (Group g) => CyclicSubgroup g where
+class Group g => CyclicSubgroup g where
   {-# MINIMAL gen #-}
 
   -- | Generator of subgroup.
@@ -45,7 +44,7 @@ newtype RootsOfUnity (n :: Nat) k = U k
 
 -- Roots of unity cyclic subgroups are arbitrary.
 instance
-  ( Modulus n,
+  ( KnownNat n,
     GaloisField k,
     CyclicSubgroup (RootsOfUnity n k),
     Group (RootsOfUnity n k)
@@ -73,7 +72,7 @@ instance (KnownNat n, GaloisField k) => Pretty (RootsOfUnity n k) where
 
 -- Roots of unity cyclic subgroups are random.
 instance
-  ( Modulus n,
+  ( KnownNat n,
     GaloisField k,
     CyclicSubgroup (RootsOfUnity n k),
     Group (RootsOfUnity n k)
@@ -94,7 +93,7 @@ instance (KnownNat n, GaloisField k) => Semigroup (RootsOfUnity n k) where
 -------------------------------------------------------------------------------
 
 -- | Cardinality of subgroup.
-cardinality :: forall n k. (KnownNat n, GaloisField k) => RootsOfUnity n k -> Natural
+cardinality :: forall n k. (KnownNat n) => RootsOfUnity n k -> Natural
 cardinality = const $ natVal (witness :: Prime n)
 {-# INLINEABLE cardinality #-}
 
@@ -128,10 +127,10 @@ toU x =
 {-# INLINEABLE toU #-}
 
 -- | Unsafe convert from field to roots of unity.
-toU' :: forall n k. (KnownNat n, GaloisField k) => k -> RootsOfUnity n k
+toU' :: forall n k. k -> RootsOfUnity n k
 toU' = U
 {-# INLINEABLE toU' #-}
 
-fromU :: forall n k. (KnownNat n, GaloisField k) => RootsOfUnity n k -> k
+fromU :: forall n k. RootsOfUnity n k -> k
 fromU (U k) = k
 {-# INLINEABLE fromU #-}
