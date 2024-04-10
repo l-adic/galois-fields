@@ -5,7 +5,7 @@ where
 
 import Control.Monad.Random (Random)
 import Data.Field (Field)
-import qualified Data.Group as G (Group (..))
+import Data.Group qualified as G (Group (..))
 import GHC.Natural (Natural)
 import Protolude hiding (one, quot, (-))
 import Test.QuickCheck (Arbitrary)

@@ -1,13 +1,12 @@
 module Main where
 
-import Protolude
-
-import Criterion.Main
-
 import Bench.Binary
 import Bench.Extension
 import Bench.Prime
+import Criterion.Main
+import Protolude
 
 main :: IO ()
-main = defaultMain
-  [benchBinary, benchExtension, benchPrime]
+main =
+  defaultMain
+    [benchBinary, benchExtension, benchPrime]

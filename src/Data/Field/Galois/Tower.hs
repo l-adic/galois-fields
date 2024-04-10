@@ -28,7 +28,7 @@ class (GaloisField k, GaloisField l) => TowerOfFields k l where
 -------------------------------------------------------------------------------
 
 -- Prime field towers are reflexive.
-instance KnownNat p => TowerOfFields (Prime p) (Prime p) where
+instance (KnownNat p) => TowerOfFields (Prime p) (Prime p) where
   embed = identity
   {-# INLINEABLE embed #-}
 

@@ -28,7 +28,7 @@ import Text.PrettyPrint.Leijen.Text (Pretty (..))
 -------------------------------------------------------------------------------
 
 -- | Cyclic subgroups of finite groups.
-class Group g => CyclicSubgroup g where
+class (Group g) => CyclicSubgroup g where
   {-# MINIMAL gen #-}
 
   -- | Generator of subgroup.
