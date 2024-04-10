@@ -1,5 +1,15 @@
 # Change log for galois-field
 
+## 2.0.0
+
+* Bump GHC versions to support 9.6 and 9.8 (9.4 seems to not be possible with certain
+  uses of RULES, see [GHC #22761](https://gitlab.haskell.org/ghc/ghc/-/issues/22761))
+* Added CI with build matrix
+* Bump various dep version bounds
+* Switched to use `mod` package
+* Removed the INLINE pragmas for `pow`, they were broken on all GHC version (see [GHC #22716](https://gitlab.haskell.org/ghc/ghc/-/issues/22716))
+* Formatted with Ormolu
+
 ## 1.0.3
 
 * Add `fromU` for RootsOfUnity

@@ -1,12 +1,10 @@
 module Bench.Binary where
 
-import Protolude
-
+import Bench.Galois
 import Control.Monad.Random
 import Criterion.Main
 import Data.Field.Galois
-
-import Bench.Galois
+import Protolude
 
 type F2m = Binary 0x80000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000425
 

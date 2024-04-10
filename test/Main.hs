@@ -1,13 +1,12 @@
 module Main where
 
 import Protolude
-
-import Test.Tasty
-
 import Test.Binary
 import Test.Extension
 import Test.Prime
+import Test.Tasty
 
 main :: IO ()
-main = defaultMain $
-  testGroup "Tests" [testPrime, testExtension, testBinary]
+main =
+  defaultMain $
+    testGroup "Tests" [testPrime, testExtension, testBinary]

@@ -1,16 +1,16 @@
 {-# LANGUAGE UndecidableInstances #-}
 
 module Data.Field.Galois.Tower
-  ( TowerOfFields(..)
-  , (*^)
-  ) where
-
-import Protolude
+  ( TowerOfFields (..),
+    (*^),
+  )
+where
 
 import Data.Field.Galois.Base (GaloisField)
-import Data.Field.Galois.Prime (Prime, fromP)
-import Data.Field.Galois.Extension (Extension, IrreducibleMonic, pattern V)
 import Data.Field.Galois.Binary (Binary, toB')
+import Data.Field.Galois.Extension (Extension, IrreducibleMonic, pattern V)
+import Data.Field.Galois.Prime (Prime, fromP)
+import Protolude
 
 -------------------------------------------------------------------------------
 -- Types
@@ -19,6 +19,7 @@ import Data.Field.Galois.Binary (Binary, toB')
 -- | Tower of fields @L@ over @K@ strict partial ordering.
 class (GaloisField k, GaloisField l) => TowerOfFields k l where
   {-# MINIMAL embed #-}
+
   -- | Embed @K@ into @L@ naturally.
   embed :: k -> l
 
@@ -27,35 +28,38 @@ class (GaloisField k, GaloisField l) => TowerOfFields k l where
 -------------------------------------------------------------------------------
 
 -- Prime field towers are reflexive.
-instance KnownNat p => TowerOfFields (Prime p) (Prime p) where
+instance (KnownNat p) => TowerOfFields (Prime p) (Prime p) where
   embed = identity
-  {-# INLINABLE embed #-}
+  {-# INLINEABLE embed #-}
 
 -- Extension field towers are reflexive.
-instance IrreducibleMonic p k => TowerOfFields (Extension p k) (Extension p k) where
+instance (IrreducibleMonic p k) => TowerOfFields (Extension p k) (Extension p k) where
   embed = identity
-  {-# INLINABLE embed #-}
+  {-# INLINEABLE embed #-}
 
 -- Extension fields are towers of fields.
-instance {-# OVERLAPPING #-} IrreducibleMonic p k => TowerOfFields k (Extension p k) where
+instance {-# OVERLAPPING #-} (IrreducibleMonic p k) => TowerOfFields k (Extension p k) where
   embed = V
-  {-# INLINABLE embed #-}
+  {-# INLINEABLE embed #-}
 
 -- Extension field towers are transitive.
-instance {-# OVERLAPPABLE #-} (TowerOfFields k l, IrreducibleMonic p l, TowerOfFields l (Extension p l))
-  => TowerOfFields k (Extension p l) where
+instance
+  {-# OVERLAPPABLE #-}
+  (TowerOfFields k l, IrreducibleMonic p l, TowerOfFields l (Extension p l)) =>
+  TowerOfFields k (Extension p l)
+  where
   embed = embed . (embed :: k -> l)
-  {-# INLINABLE embed #-}
+  {-# INLINEABLE embed #-}
 
 -- Binary field towers are reflexive.
-instance KnownNat p => TowerOfFields (Binary p) (Binary p) where
+instance (KnownNat p) => TowerOfFields (Binary p) (Binary p) where
   embed = identity
-  {-# INLINABLE embed #-}
+  {-# INLINEABLE embed #-}
 
 -- Binary fields are towers of fields.
-instance KnownNat p => TowerOfFields (Prime 2) (Binary p) where
+instance (KnownNat p) => TowerOfFields (Prime 2) (Binary p) where
   embed = toB' . fromP
-  {-# INLINABLE embed #-}
+  {-# INLINEABLE embed #-}
 
 -------------------------------------------------------------------------------
 -- Functions
@@ -63,6 +67,7 @@ instance KnownNat p => TowerOfFields (Prime 2) (Binary p) where
 
 -- | Scalar multiplication.
 infixl 7 *^
-(*^) :: TowerOfFields k l => k -> l -> l
+
+(*^) :: (TowerOfFields k l) => k -> l -> l
 (*^) = (*) . embed
 {-# INLINE (*^) #-}
