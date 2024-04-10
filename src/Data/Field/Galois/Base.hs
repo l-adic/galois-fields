@@ -25,7 +25,8 @@ class
     Ord k,
     Pretty k,
     Random k,
-    Show k
+    Show k,
+    NFData k
   ) =>
   GaloisField k
   where

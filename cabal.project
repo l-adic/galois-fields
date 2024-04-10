@@ -1,10 +1,7 @@
 tests: True
+benchmarks: True
 
-packages: 
-  .
-
-repository hackage.haskell.org
-  url: http://hackage.haskell.org/
+packages: .
 
 source-repository-package
   type: git

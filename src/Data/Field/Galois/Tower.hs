@@ -10,7 +10,6 @@ import Data.Field.Galois.Base (GaloisField)
 import Data.Field.Galois.Binary (Binary, toB')
 import Data.Field.Galois.Extension (Extension, IrreducibleMonic, pattern V)
 import Data.Field.Galois.Prime (Prime, fromP)
-import Data.Modular (Modulus)
 import Protolude
 
 -------------------------------------------------------------------------------
@@ -29,7 +28,7 @@ class (GaloisField k, GaloisField l) => TowerOfFields k l where
 -------------------------------------------------------------------------------
 
 -- Prime field towers are reflexive.
-instance (Modulus p) => TowerOfFields (Prime p) (Prime p) where
+instance KnownNat p => TowerOfFields (Prime p) (Prime p) where
   embed = identity
   {-# INLINEABLE embed #-}
 

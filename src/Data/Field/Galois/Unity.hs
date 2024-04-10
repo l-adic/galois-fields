@@ -46,8 +46,7 @@ newtype RootsOfUnity (n :: Nat) k = U k
 instance
   ( KnownNat n,
     GaloisField k,
-    CyclicSubgroup (RootsOfUnity n k),
-    Group (RootsOfUnity n k)
+    CyclicSubgroup (RootsOfUnity n k)
   ) =>
   Arbitrary (RootsOfUnity n k)
   where
@@ -74,8 +73,7 @@ instance (KnownNat n, GaloisField k) => Pretty (RootsOfUnity n k) where
 instance
   ( KnownNat n,
     GaloisField k,
-    CyclicSubgroup (RootsOfUnity n k),
-    Group (RootsOfUnity n k)
+    CyclicSubgroup (RootsOfUnity n k)
   ) =>
   Random (RootsOfUnity n k)
   where
