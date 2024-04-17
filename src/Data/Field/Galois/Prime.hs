@@ -12,6 +12,7 @@ import Data.Field (Field)
 import Data.Field.Galois.Base (GaloisField (..))
 import Data.Group (Group (..))
 import Data.Mod (Mod, unMod, (^%))
+import Data.Propagator (Propagated, PropagatedNum)
 import Data.Semiring (Ring (..), Semiring (..))
 import GHC.Natural (naturalToInteger)
 import GHC.TypeNats (natVal)
@@ -33,6 +34,10 @@ class (GaloisField k) => PrimeField k where
 -- | Prime field elements.
 newtype Prime (p :: Nat) = P (Mod p)
   deriving (Eq, Ord, Show, Generic, Num, Fractional, Euclidean, Field, GcdDomain, Ring, Semiring, Bounded, Enum, NFData)
+
+instance (KnownNat p) => Propagated (Prime p)
+
+instance (KnownNat p) => PropagatedNum (Prime p)
 
 instance Hashable (Prime p) where
   hashWithSalt s (P x) = hashWithSalt s (unMod x)
