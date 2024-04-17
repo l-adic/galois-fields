@@ -13,6 +13,7 @@ import Data.Euclidean as S (Euclidean (..), GcdDomain)
 import Data.Field (Field)
 import Data.Field.Galois.Base (GaloisField (..))
 import Data.Group (Group (..))
+import Data.Propagator (Propagated, PropagatedNum)
 import Data.Semiring (Ring (..), Semiring (..))
 import Data.Vector.Unboxed as V (fromList, length, toList)
 import GHC.Exts (IsList (..))
@@ -42,6 +43,10 @@ newtype Binary (p :: Nat) = B F2Poly
 instance (KnownNat p) => BinaryField (Binary p) where
   fromB (B x) = toInteger x
   {-# INLINEABLE fromB #-}
+
+instance Propagated (Binary p)
+
+instance (KnownNat p) => PropagatedNum (Binary p)
 
 -- Binary fields are Galois fields.
 instance (KnownNat p) => GaloisField (Binary p) where

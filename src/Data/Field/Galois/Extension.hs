@@ -24,6 +24,7 @@ import Data.Field.Galois.Base (GaloisField (..))
 import Data.Field.Galois.Frobenius (frobenius)
 import Data.Group (Group (..))
 import Data.Poly (VPoly, leading, monomial, scale, toPoly, unPoly)
+import Data.Propagator (Propagated, PropagatedNum)
 import Data.Semiring (Ring (..), Semiring (..))
 import GHC.Exts (IsList (..))
 import Protolude as P hiding (Semiring, rem, toList)
@@ -68,6 +69,10 @@ instance (IrreducibleMonic p k) => GaloisField (Extension p k) where
     Just z -> E $ toPoly z
     Nothing -> pow y $ char y
   {-# INLINEABLE frob #-}
+
+instance (IrreducibleMonic p k) => Propagated (Extension p k)
+
+instance (IrreducibleMonic p k) => PropagatedNum (Extension p k)
 
 {-# RULES
 "Extension.pow" forall (k :: (IrreducibleMonic p k) => Extension p k) n.

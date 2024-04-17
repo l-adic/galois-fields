@@ -29,6 +29,7 @@ common deps
     , MonadRandom     ^>=0.6
     , poly            >=0.3.2  && <0.6
     , protolude       ^>=0.3.3
+    , propagators     ^>=0.1.0
     , QuickCheck      >=2.13   && <2.15
     , semirings       ^>=0.7
     , vector          ^>=0.13.0

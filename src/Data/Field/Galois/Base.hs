@@ -6,6 +6,7 @@ where
 import Control.Monad.Random (Random)
 import Data.Field (Field)
 import Data.Group qualified as G (Group (..))
+import Data.Propagator (PropagatedNum)
 import GHC.Natural (Natural)
 import Protolude hiding (one, quot, (-))
 import Test.QuickCheck (Arbitrary)
@@ -26,7 +27,8 @@ class
     Pretty k,
     Random k,
     Show k,
-    NFData k
+    NFData k,
+    PropagatedNum k
   ) =>
   GaloisField k
   where
