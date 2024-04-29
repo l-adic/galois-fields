@@ -18,7 +18,7 @@ import GHC.Natural (naturalToInteger)
 import GHC.TypeNats (natVal)
 import Protolude as P hiding (Semiring, natVal, rem)
 import Test.QuickCheck (Arbitrary (..), choose)
-import Text.PrettyPrint.Leijen.Text (Pretty (..))
+import Text.PrettyPrint.Leijen.Text (Pretty (..), text)
 
 -------------------------------------------------------------------------------
 -- Data types
@@ -103,7 +103,14 @@ instance (KnownNat p) => Integral (Prime p) where
 
 -- Prime fields are pretty.
 instance (KnownNat p) => Pretty (Prime p) where
-  pretty (P x) = pretty $ naturalToInteger $ unMod x
+  pretty (f :: Prime p) =
+    let p = toInteger (natVal $ Proxy @p)
+        cutoff = p `div` 2
+        x = fromP f
+     in if x < cutoff
+          then pretty x
+          else text "-" <> pretty (abs (x - p))
+
 
 -- Prime fields are random.
 instance (KnownNat p) => Random (Prime p) where
