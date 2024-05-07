@@ -16,9 +16,10 @@ import Data.Propagator (Propagated, PropagatedNum)
 import Data.Semiring (Ring (..), Semiring (..))
 import GHC.Natural (naturalToInteger)
 import GHC.TypeNats (natVal)
-import Protolude as P hiding (Semiring, natVal, rem)
+import Protolude as P hiding (Semiring, natVal, rem, lift)
 import Test.QuickCheck (Arbitrary (..), choose)
 import Text.PrettyPrint.Leijen.Text (Pretty (..), text)
+import Language.Haskell.TH.Syntax
 
 -------------------------------------------------------------------------------
 -- Data types
@@ -61,6 +62,11 @@ instance (KnownNat p) => GaloisField (Prime p) where
   (^) k n =
     pow k n
   #-}
+
+instance KnownNat p => Lift (Prime p) where
+  liftTyped x = unsafeCodeCoerce (lift $ fromP x)
+  lift x = return (LitE (IntegerL $ fromP x))
+
 
 -------------------------------------------------------------------------------
 -- Group instances

@@ -32,6 +32,7 @@ common deps
     , propagators     ^>=0.1.0
     , QuickCheck      >=2.13   && <2.15
     , semirings       ^>=0.7
+    , template-haskell
     , vector          ^>=0.13.0
     , wl-pprint-text  ^>=1.2.0
 
