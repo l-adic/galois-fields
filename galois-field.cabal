@@ -22,6 +22,7 @@ common warnings
 common deps
   build-depends:
     , base            >=4.18 && <5
+    , binary          >=0.8.9 && <0.9
     , bitvec ^>=1.1.3
     , groups >=0.4.1  && <0.6
     , integer-gmp     ^>=1.1

@@ -7,6 +7,7 @@ module Data.Field.Galois.Prime
 where
 
 import Control.Monad.Random (Random (..))
+import Data.Binary qualified as B
 import Data.Euclidean as S (Euclidean (..), GcdDomain)
 import Data.Field (Field)
 import Data.Field.Galois.Base (GaloisField (..))
@@ -41,6 +42,10 @@ instance (KnownNat p) => PropagatedNum (Prime p)
 
 instance Hashable (Prime p) where
   hashWithSalt s (P x) = hashWithSalt s (unMod x)
+
+instance (KnownNat p) => B.Binary (Prime p) where
+  put = B.put . fromP
+  get = P . fromInteger <$> B.get
 
 -- Prime fields are convertible.
 instance (KnownNat p) => PrimeField (Prime p) where
@@ -110,7 +115,6 @@ instance (KnownNat p) => Pretty (Prime p) where
      in if x < cutoff
           then pretty x
           else text "-" <> pretty (abs (x - p))
-
 
 -- Prime fields are random.
 instance (KnownNat p) => Random (Prime p) where
