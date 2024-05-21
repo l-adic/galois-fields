@@ -8,6 +8,7 @@ module Data.Field.Galois.Binary
 where
 
 import Control.Monad.Random (Random (..))
+import Data.Binary qualified as B
 import Data.Bit (Bit, F2Poly, gcdExt, toF2Poly, unF2Poly)
 import Data.Euclidean as S (Euclidean (..), GcdDomain)
 import Data.Field (Field)
@@ -47,6 +48,10 @@ instance (KnownNat p) => BinaryField (Binary p) where
 instance Propagated (Binary p)
 
 instance (KnownNat p) => PropagatedNum (Binary p)
+
+instance B.Binary (Binary p) where
+  put (B x) = B.put (toInteger <$> V.toList (unF2Poly x))
+  get = B . toF2Poly . V.fromList . map (fromInteger @Bit) <$> B.get
 
 -- Binary fields are Galois fields.
 instance (KnownNat p) => GaloisField (Binary p) where

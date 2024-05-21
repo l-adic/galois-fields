@@ -4,6 +4,7 @@ module Data.Field.Galois.Base
 where
 
 import Control.Monad.Random (Random)
+import Data.Binary (Binary)
 import Data.Field (Field)
 import Data.Group qualified as G (Group (..))
 import Data.Propagator (PropagatedNum)
@@ -28,7 +29,8 @@ class
     Random k,
     Show k,
     NFData k,
-    PropagatedNum k
+    PropagatedNum k,
+    Binary k
   ) =>
   GaloisField k
   where

@@ -18,6 +18,7 @@ module Data.Field.Galois.Extension
 where
 
 import Control.Monad.Random (Random (..))
+import Data.Binary qualified as B
 import Data.Euclidean (Euclidean (..), GcdDomain, gcdExt)
 import Data.Field (Field)
 import Data.Field.Galois.Base (GaloisField (..))
@@ -53,6 +54,10 @@ class (GaloisField k) => ExtensionField k where
 -- | Extension field elements.
 newtype Extension p k = E (VPoly k)
   deriving (Eq, Generic, NFData, Ord, Show)
+
+instance (GaloisField k) => B.Binary (Extension p k) where
+  put (E x) = B.put (toList x)
+  get = E . fromList <$> B.get
 
 -- Extension fields are convertible.
 instance (IrreducibleMonic p k) => ExtensionField (Extension p k) where
